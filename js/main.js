@@ -76,6 +76,8 @@ const app = new Vue({
                 this.resetNewTask();
                 this.showModal = false;
             }
+            this.editingTaskIndex = null;
+            this.editingColumnIndex = null;
         },
         deleteTask(columnIndex, taskIndex) {
             this.columns[columnIndex].tasks.splice(taskIndex, 1);
@@ -130,6 +132,12 @@ const app = new Vue({
         },
         resetNewTask() {
             this.newTask = { title: '', description: '', deadline: '' };
+        },
+        openAddTaskModal() {
+            this.resetNewTask();
+            this.editingTaskIndex = null; // Сброс индекса редактируемой задачи
+            this.editingColumnIndex = null; // Сброс индекса редактируемой колонки
+            this.showModal = true; // Открываем модальное окно
         }
     },
     template: `
@@ -139,7 +147,7 @@ const app = new Vue({
                      :key="columnIndex" 
                      :column="column" 
                      :columnIndex="columnIndex" 
-                     :addTask="() => { showModal = true; resetNewTask(); }" 
+                     :addTask="openAddTaskModal"
                      :editTask="editTask" 
                      :deleteTask="deleteTask" 
                      :moveTask="moveTask" 
