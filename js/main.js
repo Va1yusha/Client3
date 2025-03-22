@@ -24,7 +24,7 @@ const app = new Vue({
                 const task = {
                     ...this.newTask,
                     createdAt: new Date().toLocaleString(),
-                    updatedAt: new Date().toLocaleString()
+                    updatedAt: new Date().toLocaleString(),
                     status: ''
                 };
                 this.columns[0].tasks.push(task);
@@ -102,9 +102,11 @@ const app = new Vue({
                      <button v-if="columnIndex < 3" @click="moveTask(columnIndex, columnIndex + 1, taskIndex)">
                          {{ getNextColumnTitle(columnIndex) }}
                      </button>
-                     <button @click="deleteTask(columnIndex, taskIndex)">Удалить</button>
-                     <button @click="editTask(columnIndex, taskIndex)">Редактировать</button>
                      <button v-if="columnIndex === 2" @click="returnTask(columnIndex, taskIndex)">Вернуть в работу</button>
+                     <div>
+                         <button v-if="columnIndex === 0 || columnIndex === 1 || columnIndex === 2" @click="editTask(columnIndex, taskIndex)">Редактировать</button>
+                         <button v-if="columnIndex === 0" @click="deleteTask(columnIndex, taskIndex)">Удалить</button>
+                     </div>
                  </div>
                  <button v-if="columnIndex === 0" @click="showModal = true">Добавить задачу</button>
              </div>
@@ -115,6 +117,7 @@ const app = new Vue({
                       <h2>{{ editingTaskIndex !== null ? 'Редактировать задачу' : 'Добавить задачу' }}</h2>
                      <input v-model="newTask.title" placeholder="Заголовок задачи" />
                      <textarea v-model="newTask.description" placeholder="Описание задачи"></textarea>
+                     <p>Дедлайн:</p>
                      <input type="date" v-model="newTask.deadline" />
                      <button @click="editingTaskIndex !== null ? saveEditedTask() : addTask()">
                          {{ editingTaskIndex !== null ? 'Сохранить изменения' : 'Добавить задачу' }}
