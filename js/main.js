@@ -1,5 +1,5 @@
 Vue.component('task', {
-    props: ['task', 'columnIndex', 'taskIndex', 'moveTask', 'editTask', 'deleteTask', 'returnTask', 'getNextColumnTitle'],
+    props: ['task', 'columnIndex', 'taskIndex', 'getNextColumnTitle'],
     template: `
              <div class="task">
                  <h3>{{ task.title }}</h3>
@@ -9,20 +9,20 @@ Vue.component('task', {
                  <p><strong>Дэдлайн:</strong> {{ task.deadline }}</p>
                  <p v-if="task.returnReason"><strong>Причина возврата:</strong> {{ task.returnReason }}</p>
                  <p v-if="task.status"><strong>Статус:</strong> {{ task.status }}</p>
-                 <button v-if="columnIndex < 3" @click="moveTask(columnIndex, columnIndex + 1, taskIndex)">
+                 <button v-if="columnIndex < 3" @click="$emit('move-task', columnIndex, columnIndex + 1, taskIndex)">
                      {{ getNextColumnTitle(columnIndex) }}
                  </button>
-                 <button v-if="columnIndex === 2" @click="returnTask(columnIndex, taskIndex)">Вернуть в работу</button>
+                 <button v-if="columnIndex === 2" @click="$emit('return-task', columnIndex, taskIndex)">Вернуть в работу</button>
                  <div>
-                     <button v-if="columnIndex === 0 || columnIndex === 1 || columnIndex === 2" @click="editTask(columnIndex, taskIndex)">Редактировать</button>
-                     <button v-if="columnIndex === 0" @click="deleteTask(columnIndex, taskIndex)">Удалить</button>
+                     <button v-if="columnIndex === 0 || columnIndex === 1 || columnIndex === 2" @click="$emit('edit-task', columnIndex, taskIndex)">Редактировать</button>
+                     <button v-if="columnIndex === 0" @click="$emit('delete-task', columnIndex, taskIndex)">Удалить</button>
                  </div>
              </div>
          `
 });
 
 Vue.component('column', {
-    props: ['column', 'columnIndex', 'addTask', 'editTask', 'deleteTask', 'moveTask', 'returnTask', 'getNextColumnTitle'],
+    props: ['column', 'columnIndex', 'addTask', 'getNextColumnTitle'],
     template: `
              <div class="column">
                  <h2>{{ column.title }}</h2>
@@ -32,11 +32,11 @@ Vue.component('column', {
                      :task="task" 
                      :columnIndex="columnIndex" 
                      :taskIndex="taskIndex" 
-                     :moveTask="moveTask" 
-                     :editTask="editTask" 
-                     :deleteTask="deleteTask" 
-                     :returnTask="returnTask" 
                      :getNextColumnTitle="getNextColumnTitle"
+                     @move-task="$emit('move-task', ...arguments)"
+                     @edit-task="$emit('edit-task', ...arguments)"
+                     @delete-task="$emit('delete-task', ...arguments)"
+                     @return-task="$emit('return-task', ...arguments)"
                  ></task>
                  <button v-if="columnIndex === 0" @click="addTask">Добавить задачу</button>
              </div>
@@ -148,19 +148,19 @@ const app = new Vue({
                      :column="column" 
                      :columnIndex="columnIndex" 
                      :addTask="openAddTaskModal"
-                     :editTask="editTask" 
-                     :deleteTask="deleteTask" 
-                     :moveTask="moveTask" 
-                     :returnTask="returnTask" 
                      :getNextColumnTitle="getNextColumnTitle"
+                     @move-task="moveTask"
+                     @edit-task="editTask"
+                     @delete-task="deleteTask"
+                     @return-task="returnTask"
                  ></column>
  
               <div v-if="showModal" class="modal">
                   <div class="modal-content">
                          <span class="close" @click="showModal = false">&times;</span>
                          <h2>{{ editingTaskIndex !== null ? 'Редактировать задачу' : 'Добавить задачу' }}</h2>
-                         <input v-model="newTask.title" placeholder="Заголовок задачи" />
-                         <textarea v-model="newTask.description" placeholder="Описание задачи"></textarea>
+                         <input v-model="newTask.title" placeholder="Заголовок задачи" maxlength="30"/>
+                         <textarea v-model="newTask.description" placeholder="Описание задачи" maxlength="300"></textarea>
                          <p>Дедлайн:</p>
                          <input type="date" v-model="newTask.deadline" />
                          <button @click="editingTaskIndex !== null ? saveEditedTask() : addTask()">
