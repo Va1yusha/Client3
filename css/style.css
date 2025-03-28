@@ -57,6 +57,42 @@ body {
     word-wrap: break-word;
 }
 
+/* Анимация для близкого дедлайна (2 дня или меньше) */
+.task.deadline-close {
+    animation: pulse-orange 2s infinite;
+    border-left: 4px solid #ff7700;
+}
+
+/* Анимация для просроченного дедлайна */
+.task.deadline-expired {
+    animation: pulse-red 2s infinite;
+    border-left: 4px solid red;
+}
+
+@keyframes pulse-orange {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 136, 0, 0.68);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 165, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 165, 0, 0);
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
 button {
     background-color: #007bff;
     color: white;

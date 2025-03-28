@@ -1,7 +1,7 @@
 Vue.component('task', {
     props: ['task', 'columnIndex', 'taskIndex', 'getNextColumnTitle'],
     template: `
-             <div class="task">
+             <div class="task" :class="deadlineStatus">
                  <h3>{{ task.title }}</h3>
                  <p><strong>Описание:</strong> {{ task.description }}</p>
                  <p><strong>Создано:</strong> {{ task.createdAt }}</p>
@@ -18,7 +18,24 @@ Vue.component('task', {
                      <button v-if="columnIndex === 0" @click="$emit('delete-task', columnIndex, taskIndex)">Удалить</button>
                  </div>
              </div>
-         `
+         `,
+    computed: {
+        deadlineStatus() {
+            if (!this.task.deadline) return '';
+
+            const deadlineDate = new Date(this.task.deadline);
+            const currentDate = new Date();
+            const timeDiff = deadlineDate - currentDate;
+            const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+            if (deadlineDate < currentDate) {
+                return 'deadline-expired';
+            } else if (daysDiff <= 2) {
+                return 'deadline-close';
+            }
+            return '';
+        }
+    }
 });
 
 Vue.component('column', {
